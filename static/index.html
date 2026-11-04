@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Password Security Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-icon">⌁</span><span>cipher<span class="brand-light">lab</span></span></a>
+    <div class="top-meta"><span class="live-dot"></span> LOCAL SECURITY WORKBENCH <span class="version">v1.0</span></div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div class="eyebrow">PASSWORD SECURITY / INTERACTIVE LAB</div>
+      <h1>Make weak passwords<br><span>history.</span></h1>
+      <p>Inspect password strength, explore cryptographic fingerprints, and create secure password hashes — right from your local machine.</p>
+    </section>
+
+    <section class="visual-panel">
+      <div class="visual-grid"></div>
+      <div class="orbit-wrap">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="entropy-ring"><div><strong id="entropyValue">0.0</strong><small>ENTROPY / BITS</small></div></div>
+        <div class="orbit-caption">PASSWORD ENTROPY</div>
+      </div>
+      <div class="matrix-area">
+        <div class="matrix-heading"><span class="live-dot"></span> HASH VISUALIZATION <span class="matrix-note">SHA-256 PREVIEW</span></div>
+        <div class="matrix" id="matrix">
+          <span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span>
+          <span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span>
+          <span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span>
+          <span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span><span>—</span>
+        </div>
+        <div class="matrix-foot">INPUT STRING <span id="matrixStatus">AWAITING INPUT</span></div>
+      </div>
+      <div class="visual-bottom"><span>SECURITY ANALYSIS ENGINE</span><span>● SYSTEM READY</span></div>
+    </section>
+
+    <section class="stats">
+      <div><span>STRENGTH RATING</span><strong id="strengthValue">—</strong></div>
+      <div><span>CHARACTER COUNT</span><strong id="lengthValue">0</strong></div>
+      <div><span>HASH OUTPUT</span><strong id="outputValue">256 <small>BITS</small></strong></div>
+    </section>
+
+    <section class="workspace">
+      <div class="section-title"><span class="step">01</span><div><h2>Test your password</h2><p>Type a sample password to see its security profile.</p></div></div>
+      <label class="field-label" for="password">PASSWORD INPUT</label>
+      <div class="password-row">
+        <input id="password" type="password" autocomplete="off" spellcheck="false" placeholder="Enter a password to analyze...">
+        <button class="icon-btn" id="togglePassword" type="button" aria-label="Show password">◉</button>
+        <button class="clear-btn" id="clearPassword" type="button">CLEAR</button>
+      </div>
+      <div class="analysis-grid">
+        <div class="subpanel">
+          <div class="field-label">COMPLEXITY CHECKLIST</div>
+          <div class="checks">
+            <span class="check" id="c-length">↗ &nbsp;8+ CHARACTERS</span>
+            <span class="check" id="c-uppercase">↗ &nbsp;UPPERCASE</span>
+            <span class="check" id="c-lowercase">↗ &nbsp;LOWERCASE</span>
+            <span class="check" id="c-digit">↗ &nbsp;NUMBER</span>
+            <span class="check" id="c-symbol">↗ &nbsp;SYMBOL</span>
+          </div>
+        </div>
+        <div class="subpanel feedback-panel">
+          <div class="field-label">SECURITY OBSERVATIONS</div>
+          <ul id="feedback"><li>Waiting for password input...</li></ul>
+        </div>
+      </div>
+
+      <div class="section-title hash-title"><span class="step">02</span><div><h2>Cryptographic hashing</h2><p>Generate a digest or a salted password-storage hash.</p></div></div>
+      <div class="algorithm-row">
+        <div class="algorithm-copy"><div class="field-label">SELECT ALGORITHM</div>
+          <div class="segmented">
+            <button class="algo active" data-algo="scrypt">SCRYPT <small>RECOMMENDED</small></button>
+            <button class="algo" data-algo="sha256">SHA-256 <small>DEMO ONLY</small></button>
+          </div>
+        </div>
+        <div class="algo-description" id="algoDescription">Scrypt is a salted, deliberately expensive password hash designed for password storage.</div>
+      </div>
+      <button class="primary-btn" id="hashButton" type="button">GENERATE HASH <span>↗</span></button>
+      <div class="result-box">
+        <div class="result-head"><span>COMPUTED HASH SIGNATURE</span><button id="copyHash" type="button">COPY ↗</button></div>
+        <code id="hashOutput">Your generated hash will appear here.</code>
+        <div class="result-meta"><span id="hashType">NO HASH GENERATED</span><span id="hashBits">— BITS</span></div>
+      </div>
+
+      <div class="verify-box">
+        <div class="verify-heading"><span class="step">03</span><div><h2>Verify a stored hash</h2><p>Check whether a password matches a scrypt hash.</p></div></div>
+        <label class="field-label" for="storedHash">STORED SCRYPT HASH</label>
+        <input id="storedHash" class="plain-input" placeholder="Paste the scrypt hash string...">
+        <button class="secondary-btn" id="verifyButton" type="button">VERIFY PASSWORD</button>
+        <div id="verifyResult" class="verify-result" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <footer><span> CIPHERLAB / PASSWORD SECURITY LAB</span><span>BUILT FOR LEARNING · RUNS LOCALLY</span></footer>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>
