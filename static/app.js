@@ -2,6 +2,8 @@ const $ = (id) => document.getElementById(id);
 const password = $("password");
 let selectedAlgorithm = "scrypt";
 let latestHash = "";
+let latestAnalysis = null;
+let latestBreach = null;
 
 function setChecks(checks={}) {
   for (const key of ["length","uppercase","lowercase","digit","symbol"]) {
@@ -52,6 +54,10 @@ password.addEventListener("input", () => {
       $("entropyValue").textContent = result.entropy.toFixed(1);
       $("strengthValue").textContent = result.strength;
       setChecks(result.checks); feedback(result.feedback);
+      latestAnalysis = result;
+      $("poolValue").textContent = result.pool_size + " chars";
+      $("guessValue").textContent = result.log10_guesses;
+      $("crackValue").textContent = result.crack_time;
       updateMatrix(result.sha256); $("matrixStatus").textContent = "FINGERPRINT READY";
     } catch (error) { feedback([error.message]); }
   }, 180);
@@ -102,3 +108,14 @@ $("verifyButton").addEventListener("click", async () => {
     resultEl.textContent = error.message; resultEl.className = "verify-result bad";
   }
 });
+
+$("breachButton").addEventListener("click", async () => {
+ const el=$("breachResult"); if(!password.value){el.textContent="Enter a password first.";return;}
+ $("breachButton").disabled=true;el.textContent="Checking HIBP range API…";
+ try{latestBreach=await post("/api/breach",{password:password.value});el.textContent=latestBreach.found?`⚠ Found ${latestBreach.count.toLocaleString()} times in known breach data. Do not use this password.`:"✓ No match found in the queried Pwned Passwords corpus.";el.className="verify-result "+(latestBreach.found?"bad":"good");}
+ catch(e){latestBreach={error:e.message};el.textContent=e.message;el.className="verify-result bad";}finally{$("breachButton").disabled=false;}
+});
+$("genLength").addEventListener("input",()=>$("genLengthValue").textContent=$("genLength").value);
+$("generateButton").addEventListener("click",async()=>{try{const r=await post("/api/generate",{length:Number($("genLength").value)});$("generatedPassword").textContent=r.password;}catch(e){$("generatedPassword").textContent=e.message;}});
+$("copyGenerated").addEventListener("click",async()=>{const v=$("generatedPassword").textContent;if(!v||v.includes("appear here"))return;try{await navigator.clipboard.writeText(v);$("copyGenerated").textContent="COPIED ✓";}catch{$("copyGenerated").textContent="COPY FAILED";}setTimeout(()=>$("copyGenerated").textContent="COPY",1400);});
+$("exportButton").addEventListener("click",()=>{if(!latestAnalysis||!password.value){$("exportStatus").textContent=" Analyze a password first.";return;}const report={tool:"CipherLab Password Security Lab",generated_at:new Date().toISOString(),analysis:{strength:latestAnalysis.strength,length:latestAnalysis.length,estimated_entropy_bits:latestAnalysis.entropy,character_pool_size:latestAnalysis.pool_size,log10_search_space:latestAnalysis.log10_guesses,illustrative_crack_time_at_10_billion_guesses_per_second:latestAnalysis.crack_time,checks:latestAnalysis.checks,feedback:latestAnalysis.feedback},breach_check:latestBreach||{status:"Not checked"},privacy:"This report intentionally excludes the password, SHA-256 fingerprint and password hashes."};const blob=new Blob([JSON.stringify(report,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="cipherlab-security-report.json";a.click();URL.revokeObjectURL(url);$("exportStatus").textContent=" Report downloaded.";});
