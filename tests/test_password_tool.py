@@ -1,4 +1,6 @@
 import unittest
+import hashlib
+from app import hibp_match, generate_password
 from password_tool import (
     calculate_entropy, evaluate_strength, hash_password,
     verify_password, sha256_fingerprint,
@@ -21,6 +23,20 @@ class PasswordToolTests(unittest.TestCase):
         first = hash_password("same-password")
         second = hash_password("same-password")
         self.assertNotEqual(first, second)
+
+    def test_hibp_suffix_match(self):
+        password = "correct horse battery staple"
+        digest = hashlib.sha1(password.encode()).hexdigest().upper()
+        self.assertEqual(hibp_match(password, digest[5:] + ":42\n"), 42)
+        self.assertEqual(hibp_match(password, "0" * 35 + ":1\n"), 0)
+
+    def test_generator(self):
+        generated = generate_password(24)
+        self.assertEqual(len(generated), 24)
+        self.assertTrue(any(c.islower() for c in generated))
+        self.assertTrue(any(c.isupper() for c in generated))
+        self.assertTrue(any(c.isdigit() for c in generated))
+        self.assertTrue(any(not c.isalnum() for c in generated))
 
     def test_sha256_fingerprint(self):
         self.assertEqual(len(sha256_fingerprint("test")), 64)
