@@ -28,10 +28,6 @@ CipherLab computes a SHA-1 digest locally, sends only its first five hexadecimal
 ## Analysis limitations
 Entropy and crack-time values are estimates, not guarantees. Crack time uses an illustrative rate of 10 billion guesses/second and does not model attacker hardware, password reuse, targeted guessing, leaked personal information, or all pattern-based attacks.
 
-## Security notes
-- Use **scrypt** for password-storage demonstrations. SHA-256 is fast and shown only as a fingerprint example.
-- Use a password manager to create and store unique passwords.
-- Do not paste real passwords into screenshots, logs, source code, or public repositories.
 
 ## Tests
 ```bash
@@ -40,6 +36,3 @@ python -m unittest discover -s tests -v
 
 ## Tech stack
 Python standard library (`http.server`, `hashlib`, `secrets`, `urllib`), HTML, CSS and vanilla JavaScript.
-
-## Screenshots and demo GIF
-Add real screenshots captured with sample-only passwords under `screenshots/` and a short screen recording under `demo/`. Do not publish real credentials or hashes.
